@@ -517,11 +517,14 @@ class YouTubeAPI:
         # songapi hub first (shares this process's caches). Falls back to the
         # in-process pipeline on any failure. Joined-retries skip it.
         if not skip_api and not url_only and not exclude:
-            from robin.music.api import resolve_stream
-            api_url = await resolve_stream(vid_id)
-            if api_url:
-                logger.info(f"Stream URL via songapi for {vid_id}")
-                return api_url
+            try:
+                from robin.music.api import resolve_stream
+                api_url = await resolve_stream(vid_id)
+                if api_url:
+                    logger.info(f"Stream URL via songapi for {vid_id}")
+                    return api_url
+            except Exception:
+                pass
 
         # 0. Local file cache (instant — played before or previously downloaded).
         #    One stat() call is faster than any I/O race, so check it first.
