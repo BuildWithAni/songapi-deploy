@@ -5,10 +5,14 @@ ENV PYTHONUNBUFFERED=1 \
 
 WORKDIR /app
 
+# yt-dlp's JS challenge solver needs a real JS runtime — slim has none.
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends nodejs ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
 COPY requirements.txt /app/requirements.txt
 RUN pip install --no-cache-dir -r /app/requirements.txt
 
-# Only what songapi imports (platforms + config; heavy bot init never runs)
 COPY robin /app/robin
 COPY songapi.py /app/songapi.py
 
